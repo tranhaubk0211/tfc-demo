@@ -2,6 +2,7 @@
 
 variable "project_id" {
   type        = string
+  default     ="rich-agency-354602"
   description = "The GCP Project ID where resources will be deployed."
 }
 
