@@ -74,7 +74,7 @@ resource "google_workbench_instance" "cost_optimized_workbench" {
     machine_type = "e2-standard-4" 
 
     boot_disk {
-      disk_size_gb = 100
+      disk_size_gb = 150
       disk_type    = "PD_BALANCED" # Balanced performance and cost compared to SSD
     }
 
