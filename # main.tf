@@ -82,8 +82,9 @@ resource "google_workbench_instance" "cost_optimized_workbench" {
     # GPUs can be integrated downstream via Vertex AI Training pipelines only when needed.
 
     network_interfaces {
-      network    = google_compute_network.ai_vpc.id
-      subnetwork = google_compute_subnetwork.ai_subnet.id
+      network = google_compute_network.ai_vpc.id
+      # Change 'subnetwork' to 'subnet'
+      subnet  = google_compute_subnetwork.ai_subnet.id 
     }
 
     service_accounts {
