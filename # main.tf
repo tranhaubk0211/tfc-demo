@@ -1,11 +1,13 @@
-# main.tf
-
 terraform {
   required_version = ">= 1.3.0"
   required_providers {
     google = {
       source  = "hashicorp/google"
       version = "~> 6.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
     }
   }
 }
@@ -17,7 +19,28 @@ provider "google" {
 }
 
 # ------------------------------------------------------------------------------
-# NETWORKING (Must be included so the VM can reference them!)
+# 1. SIMULATED VAULT LAYER
+# ------------------------------------------------------------------------------
+resource "random_id" "simulated_vault_token" {
+  byte_length = 16
+}
+
+locals {
+  simulated_vault_path  = "secret/data/gcp/config"
+  simulated_vault_token = "ya29.VaultSimulatedToken-${random_id.simulated_vault_token.hex}"
+}
+
+output "vault_reading_status" {
+  value       = "Successfully authenticated via OIDC and read dynamic credentials from Vault path: ${local.simulated_vault_path}"
+}
+
+output "mock_vault_token" {
+  value       = local.simulated_vault_token
+  sensitive   = true # Crucial: This tells HCP Terraform to mask it in the UI!
+}
+
+# ------------------------------------------------------------------------------
+# 2. INFRASTRUCTURE (Massive size to guarantee cost estimation visibility)
 # ------------------------------------------------------------------------------
 resource "google_compute_network" "ai_vpc" {
   name                    = "demo-vpc"
@@ -31,9 +54,6 @@ resource "google_compute_subnetwork" "ai_subnet" {
   region        = var.region
 }
 
-# ------------------------------------------------------------------------------
-# HEAVY STANDARD COMPUTE INSTANCE (Guaranteed to trigger Cost Estimation)
-# ------------------------------------------------------------------------------
 resource "google_compute_instance" "expensive_vm" {
   name         = "high-cost-demo-vm"
   machine_type = "n2-highcpu-96" 
